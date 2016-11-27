@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="TextEditor">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="800" height="600"/>
+    </constraints>
+    <properties>
+      <maximumSize width="-1" height="-1"/>
+      <minimumSize width="800" height="600"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <toolbar id="b272b">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="20"/>
+          </grid>
+        </constraints>
+        <properties>
+          <floatable value="false"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <component id="43b79" class="javax.swing.JButton" binding="newFileButton">
+            <constraints/>
+            <properties>
+              <enabled value="true"/>
+              <hideActionText value="false"/>
+              <icon value="assets/new.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="New..."/>
+            </properties>
+            <clientProperties>
+              <html.disable class="java.lang.Boolean" value="false"/>
+            </clientProperties>
+          </component>
+          <component id="33933" class="javax.swing.JButton" binding="newRTFButton">
+            <constraints/>
+            <properties>
+              <icon value="assets/newRTF.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="New RTF..."/>
+            </properties>
+          </component>
+          <component id="99c37" class="javax.swing.JButton" binding="openFileButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <icon value="assets/open.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="Open..."/>
+            </properties>
+          </component>
+          <component id="9e46c" class="javax.swing.JButton" binding="saveFileButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <hideActionText value="false"/>
+              <icon value="assets/save.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="Save..."/>
+            </properties>
+          </component>
+          <component id="ed180" class="javax.swing.JButton" binding="saveAsButton">
+            <constraints/>
+            <properties>
+              <icon value="assets/saveas.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="Save as..."/>
+            </properties>
+          </component>
+          <component id="c54e3" class="javax.swing.JToolBar$Separator">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="4964" class="javax.swing.JButton" binding="cutButton">
+            <constraints/>
+            <properties>
+              <icon value="assets/cut.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="Cut..."/>
+            </properties>
+          </component>
+          <component id="6b43a" class="javax.swing.JButton" binding="copyButton">
+            <constraints/>
+            <properties>
+              <icon value="assets/copy.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="Copy..."/>
+            </properties>
+          </component>
+          <component id="99d13" class="javax.swing.JButton" binding="pasteButton">
+            <constraints/>
+            <properties>
+              <icon value="assets/paste.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="Paste..."/>
+            </properties>
+          </component>
+        </children>
+      </toolbar>
+      <scrollpane id="99fc">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <minimum-size width="600" height="400"/>
+          </grid>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="848d0" class="javax.swing.JEditorPane" binding="editorPane">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
+      </scrollpane>
+      <toolbar id="97a41">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="-1" height="20"/>
+          </grid>
+        </constraints>
+        <properties>
+          <floatable value="false"/>
+        </properties>
+        <border type="none"/>
+        <children/>
+      </toolbar>
+    </children>
+  </grid>
+</form>
