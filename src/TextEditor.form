@@ -139,7 +139,46 @@
           <floatable value="false"/>
         </properties>
         <border type="none"/>
-        <children/>
+        <children>
+          <component id="28d7e" class="javax.swing.JButton" binding="boldButton">
+            <constraints/>
+            <properties>
+              <icon value="assets/bold.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <selected value="false"/>
+              <text value=""/>
+              <toolTipText value="Bold"/>
+            </properties>
+          </component>
+          <component id="e4eed" class="javax.swing.JButton" binding="italicButton">
+            <constraints/>
+            <properties>
+              <icon value="assets/italic.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="Italic"/>
+            </properties>
+          </component>
+          <component id="f5893" class="javax.swing.JButton" binding="underlineButton">
+            <constraints/>
+            <properties>
+              <icon value="assets/underline.png"/>
+              <maximumSize width="26" height="26"/>
+              <minimumSize width="26" height="26"/>
+              <text value=""/>
+              <toolTipText value="Underline"/>
+            </properties>
+          </component>
+          <component id="10a92" class="javax.swing.JComboBox" binding="fontComboBox">
+            <constraints/>
+            <properties>
+              <maximumSize width="150" height="26"/>
+              <minimumSize width="150" height="26"/>
+            </properties>
+          </component>
+        </children>
       </toolbar>
     </children>
   </grid>
