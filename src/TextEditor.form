@@ -178,6 +178,13 @@
               <minimumSize width="150" height="26"/>
             </properties>
           </component>
+          <component id="8d40b" class="javax.swing.JComboBox" binding="fontSizeComboBox">
+            <constraints/>
+            <properties>
+              <maximumSize width="75" height="26"/>
+              <minimumSize width="75" height="26"/>
+            </properties>
+          </component>
         </children>
       </toolbar>
     </children>

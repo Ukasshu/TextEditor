@@ -1,8 +1,9 @@
-import com.sun.xml.internal.bind.v2.model.annotation.RuntimeAnnotationReader;
-
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.rtf.RTFEditorKit;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -12,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.util.stream.IntStream;
 
 /**
  * Created by Łukasz on 2016-11-24.
@@ -32,19 +34,20 @@ public class TextEditor extends JFrame {
     private JButton italicButton;
     private JButton underlineButton;
     private JComboBox fontComboBox;
+    private JComboBox fontSizeComboBox;
 
 
     private static int windowsCounter = 0;
     private File currentFile = null;
     private String mode = null;
 
+    Boolean isDocumentChanged;
+
     public TextEditor(String type) {
         setContentPane(mainPanel);
         menuBar = new MenuBarBuilder().menuBar;
-        createMenusListeners();
         setJMenuBar(menuBar);
         setTitle("Untitled - TextEditor");
-        System.out.println(type);
         if(type.equals("text/plain")){
             mode = "PlainTextMode";
             EventQueue.invokeLater(new LockFontElements());
@@ -58,17 +61,22 @@ public class TextEditor extends JFrame {
         for(String fontName: GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()){
             fontComboBox.addItem(fontName);
         }
-        fontComboBox.setSelectedItem("Arial");
-        editorPane.setFont(new Font("Arial", Font.BOLD, 20));
-        System.out.println(Font.getFont("Tahoma"));
-        windowsCounter++;
+        for(Integer i: IntStream.rangeClosed(1, 100).toArray()){
+            fontSizeComboBox.addItem(i);
+        }
+        fontComboBox.setSelectedItem("Monospaced");
+        fontSizeComboBox.setSelectedItem(12);
         editorPane.setEditorKit(editorPane.getEditorKitForContentType(type));
+        editorPane.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        windowsCounter++;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        createListeners();
+
+        isDocumentChanged = false;
 
     }
 
     public static void main(String[] args) {
-        System.out.println(args.length);
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -87,7 +95,7 @@ public class TextEditor extends JFrame {
         }
     }
 
-    private void createMenusListeners() {
+    private void createListeners() {
         JMenu menu = menuBar.getMenu(0);
         ActionListener al = new NewActionListener();
         menu.getItem(0).addActionListener(al);
@@ -117,9 +125,27 @@ public class TextEditor extends JFrame {
         pasteButton.addActionListener(al);
         menu = menuBar.getMenu(2);
         menu.getItem(0).addActionListener(new AboutActionListener());
-        boldButton.addActionListener(new BoldActionListener());
-        italicButton.addActionListener(new ItalicActionListener());
-        underlineButton.addActionListener(new UnderlineActionListener());
+        boldButton.addActionListener(new StyledEditorKit.BoldAction());
+        italicButton.addActionListener(new StyledEditorKit.ItalicAction());
+        underlineButton.addActionListener(new StyledEditorKit.UnderlineAction());
+        fontComboBox.addActionListener(new FontFamilyListener());
+        fontSizeComboBox.addActionListener(new FontSizeListener());
+        editorPane.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                isDocumentChanged = true;
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                isDocumentChanged = true;
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                isDocumentChanged = true;
+            }
+        });
     }
 
     private class MenuBarBuilder {
@@ -151,6 +177,23 @@ public class TextEditor extends JFrame {
         }
     }
 
+    private class FontFamilyListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Action a = new StyledEditorKit.FontFamilyAction(fontComboBox.getSelectedItem().toString(), new Font(fontComboBox.getSelectedItem().toString(), Font.PLAIN, 20).getFamily());
+            a.actionPerformed(e);
+        }
+    }
+
+    private class FontSizeListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Action a = new StyledEditorKit.FontSizeAction(fontComboBox.getSelectedItem().toString(), (Integer)fontSizeComboBox.getSelectedItem());
+            a.actionPerformed(e);
+        }
+    }
+
+
     private class LockFontElements implements Runnable {
         @Override
         public void run() {
@@ -158,6 +201,14 @@ public class TextEditor extends JFrame {
             italicButton.setEnabled(false);
             underlineButton.setEnabled(false);
             fontComboBox.setEnabled(false);
+            fontSizeComboBox.setEnabled(false);
+            try {
+                CaretListener cl = editorPane.getCaretListeners()[0];
+                editorPane.removeCaretListener(cl);
+            }
+            catch (ArrayIndexOutOfBoundsException e){
+
+            }
         }
     }
 
@@ -168,13 +219,32 @@ public class TextEditor extends JFrame {
             italicButton.setEnabled(true);
             underlineButton.setEnabled(true);
             fontComboBox.setEnabled(true);
+            fontSizeComboBox.setEnabled(true);
+            editorPane.addCaretListener(new CaretListener() {
+                @Override
+                public void caretUpdate(CaretEvent e) {
+                    EventQueue.invokeLater(new UpdateFont());
+                }
+            });
         }
     }
 
     @Override
     public void dispose() {
-        windowsCounter--;
-        super.dispose();
+        int ans = JOptionPane.NO_OPTION;
+        if(isDocumentChanged){
+            ans = JOptionPane.showConfirmDialog(mainPanel, "Do you want to save changes?", "Unsaved Changes", JOptionPane.YES_NO_CANCEL_OPTION);
+            if(ans==JOptionPane.YES_OPTION){
+                new SaveActionListener().actionPerformed(new ActionEvent(saveFileButton, 1001, null));
+                if(isDocumentChanged){
+                    ans = JOptionPane.CANCEL_OPTION;
+                }
+            }
+        }
+        if(ans!=JOptionPane.CANCEL_OPTION) {
+            windowsCounter--;
+            super.dispose();
+        }
     }
 
     private class NewActionListener implements ActionListener {
@@ -192,6 +262,7 @@ public class TextEditor extends JFrame {
             String[] args = new String[1];
             args[0] = "text/rtf";
             main(args);
+
         }
     }
 
@@ -199,7 +270,19 @@ public class TextEditor extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                EventQueue.invokeLater(new OpenFile());
+                int ans = JOptionPane.NO_OPTION;
+                if(isDocumentChanged){
+                    ans = JOptionPane.showConfirmDialog(mainPanel, "Do you want to save changes?", "Unsaved Changes", JOptionPane.YES_NO_CANCEL_OPTION);
+                    if(ans==JOptionPane.YES_OPTION){
+                        new SaveActionListener().actionPerformed(new ActionEvent(saveFileButton, 1001, null));
+                        if(isDocumentChanged){
+                            ans = JOptionPane.CANCEL_OPTION;
+                        }
+                    }
+                }
+                if(ans!=JOptionPane.CANCEL_OPTION) {
+                    EventQueue.invokeLater(new OpenFile());
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(mainPanel, "Cannot open the file");
             }
@@ -213,26 +296,51 @@ public class TextEditor extends JFrame {
                 currentFile = fc.getSelectedFile();
                 if (new FileNameExtensionFilter("RTF File", "rtf").accept(currentFile)) {
                     editorPane.setEditorKit(editorPane.getEditorKitForContentType("text/rtf"));
+                    EventQueue.invokeLater(new UnlockFontElements());
+                    mode = "RichTextMode";
                 } else {
                     editorPane.setEditorKit(editorPane.getEditorKitForContentType("text/plain"));
+                    EventQueue.invokeLater(new LockFontElements());
+                    mode = "PlainTextMode";
                 }
                 try {
                     FileReader fr = new FileReader(currentFile);
                     editorPane.getEditorKit().read(fr, editorPane.getDocument(), 0);
                     fr.close();
+                    isDocumentChanged = false;
+                    editorPane.getDocument().addDocumentListener(new DocumentListener() {
+                        @Override
+                        public void insertUpdate(DocumentEvent e) {
+                            isDocumentChanged = true;
+                        }
+
+                        @Override
+                        public void removeUpdate(DocumentEvent e) {
+                            isDocumentChanged = true;
+                        }
+
+                        @Override
+                        public void changedUpdate(DocumentEvent e) {
+                            isDocumentChanged = true;
+                        }
+                    });
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(mainPanel, "Cannot open this file!");
+                    e.printStackTrace();
+                    //System.out.println(documentHashCode);
+                    //System.out.println(editorPane);
+                    //System.out.println(editorPane.getText());
+                    //System.out.println(editorPane.getText().hashCode());
+
                 }
-                setTitle(currentFile.getName() + " - TextEditor");
+                setTitle(currentFile.getName() +" - " + mode + " - TextEditor");
             }
-            System.out.println(currentFile);
         }
     }
 
     private class SaveActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            //JOptionPane.showMessageDialog(mainPanel, "SAVE");
             if (currentFile == null) {
                 EventQueue.invokeLater(new SaveAs());
             } else {
@@ -255,7 +363,7 @@ public class TextEditor extends JFrame {
                     bos.close();
                     fos.close();
                 }
-
+                isDocumentChanged = false;
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(mainPanel, "Cannot save file!");
             }
@@ -291,10 +399,10 @@ public class TextEditor extends JFrame {
                         fw.close();
                     }
                     setTitle(currentFile.getName() + " - TextEditor");
+                    isDocumentChanged = false;
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(mainPanel, "Cannot save the file!");
                 }
-
             }
         }
     }
@@ -368,24 +476,32 @@ public class TextEditor extends JFrame {
         }
     }
 
-    private class BoldActionListener implements ActionListener {
+
+    private class UpdateFont implements Runnable{
         @Override
-        public void actionPerformed(ActionEvent e){
-
-        }
-    }
-
-    private class ItalicActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-        }
-    }
-
-    private class UnderlineActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
+        public void run() {
+            AttributeSet at = ((StyledEditorKit)editorPane.getEditorKit()).getInputAttributes();
+            if(StyleConstants.isBold(at)){
+                boldButton.setSelected(true);
+            }
+            else{
+                boldButton.setSelected(false);
+            }
+            if(StyleConstants.isItalic(at)){
+                italicButton.setSelected(true);
+            }
+            else{
+                italicButton.setSelected(false);
+            }
+            if(StyleConstants.isUnderline(at)){
+                underlineButton.setSelected(true);
+            }
+            else{
+                underlineButton.setSelected(false);
+            }
+           //System.out.println(StyleConstants.getFontFamily(at));
+            fontComboBox.setSelectedItem(StyleConstants.getFontFamily(at));
+            fontSizeComboBox.setSelectedItem(StyleConstants.getFontSize(at));
         }
     }
 }
