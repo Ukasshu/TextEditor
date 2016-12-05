@@ -35,6 +35,11 @@ public class TextEditor extends JFrame {
     private JButton underlineButton;
     private JComboBox fontComboBox;
     private JComboBox fontSizeComboBox;
+    private JButton chooseColorButton;
+    private JButton rightAlignmentButton;
+    private JButton centerAlignmentButton;
+    private JButton leftAlignmentButton;
+    private JButton justifiedAlignmentButton;
 
 
     private static int windowsCounter = 0;
@@ -45,6 +50,7 @@ public class TextEditor extends JFrame {
 
     public TextEditor(String type) {
         setContentPane(mainPanel);
+        setMinimumSize(new Dimension(800, 600));
         menuBar = new MenuBarBuilder().menuBar;
         setJMenuBar(menuBar);
         setTitle("Untitled - TextEditor");
@@ -64,6 +70,7 @@ public class TextEditor extends JFrame {
         for(Integer i: IntStream.rangeClosed(1, 100).toArray()){
             fontSizeComboBox.addItem(i);
         }
+        //System.out.println(Color.getColor());
         fontComboBox.setSelectedItem("Monospaced");
         fontSizeComboBox.setSelectedItem(12);
         editorPane.setEditorKit(editorPane.getEditorKitForContentType(type));
@@ -71,9 +78,7 @@ public class TextEditor extends JFrame {
         windowsCounter++;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         createListeners();
-
         isDocumentChanged = false;
-
     }
 
     public static void main(String[] args) {
@@ -130,6 +135,11 @@ public class TextEditor extends JFrame {
         underlineButton.addActionListener(new StyledEditorKit.UnderlineAction());
         fontComboBox.addActionListener(new FontFamilyListener());
         fontSizeComboBox.addActionListener(new FontSizeListener());
+        chooseColorButton.addActionListener(new FontColorListener());
+        rightAlignmentButton.addActionListener(new RightAlignmentListener());
+        leftAlignmentButton.addActionListener(new LeftAlignmentListener());
+        centerAlignmentButton.addActionListener(new CenterAlignmentListener());
+        justifiedAlignmentButton.addActionListener(new JustifiedAlignmentListener());
         editorPane.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -145,6 +155,7 @@ public class TextEditor extends JFrame {
             public void changedUpdate(DocumentEvent e) {
                 isDocumentChanged = true;
             }
+
         });
     }
 
@@ -153,7 +164,6 @@ public class TextEditor extends JFrame {
 
         private MenuBarBuilder() {
             JMenu menu;
-            JMenuItem menuItem;
             menuBar = new JMenuBar();
             menu = new JMenu("File");
             menu.setMnemonic(KeyEvent.VK_F);
@@ -193,6 +203,47 @@ public class TextEditor extends JFrame {
         }
     }
 
+    private class FontColorListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Color chosenColor = JColorChooser.showDialog(mainPanel, "Choose color", Color.black);
+            Action a = new StyledEditorKit.ForegroundAction("xD", chosenColor);
+            a.actionPerformed(e);
+            chooseColorButton.setBackground(chosenColor);
+        }
+    }
+
+    private class RightAlignmentListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Action a = new StyledEditorKit.AlignmentAction("xD", StyleConstants.ALIGN_RIGHT);
+            a.actionPerformed(e);
+        }
+    }
+
+    private class CenterAlignmentListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Action a = new StyledEditorKit.AlignmentAction("xD", StyleConstants.ALIGN_CENTER);
+            a.actionPerformed(e);
+        }
+    }
+
+    private class LeftAlignmentListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Action a = new StyledEditorKit.AlignmentAction("xD", StyleConstants.ALIGN_LEFT);
+            a.actionPerformed(e);
+        }
+    }
+
+    private class JustifiedAlignmentListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Action a = new StyledEditorKit.AlignmentAction("xD", StyleConstants.ALIGN_LEFT);
+            a.actionPerformed(e);
+        }
+    }
 
     private class LockFontElements implements Runnable {
         @Override
@@ -202,6 +253,11 @@ public class TextEditor extends JFrame {
             underlineButton.setEnabled(false);
             fontComboBox.setEnabled(false);
             fontSizeComboBox.setEnabled(false);
+            chooseColorButton.setEnabled(false);
+            rightAlignmentButton.setEnabled(false);
+            centerAlignmentButton.setEnabled(false);
+            leftAlignmentButton.setEnabled(false);
+            justifiedAlignmentButton.setEnabled(false);
             try {
                 CaretListener cl = editorPane.getCaretListeners()[0];
                 editorPane.removeCaretListener(cl);
@@ -220,6 +276,11 @@ public class TextEditor extends JFrame {
             underlineButton.setEnabled(true);
             fontComboBox.setEnabled(true);
             fontSizeComboBox.setEnabled(true);
+            chooseColorButton.setEnabled(true);
+            rightAlignmentButton.setEnabled(true);
+            centerAlignmentButton.setEnabled(true);
+            leftAlignmentButton.setEnabled(true);
+            justifiedAlignmentButton.setEnabled(true);
             editorPane.addCaretListener(new CaretListener() {
                 @Override
                 public void caretUpdate(CaretEvent e) {
@@ -499,9 +560,37 @@ public class TextEditor extends JFrame {
             else{
                 underlineButton.setSelected(false);
             }
-           //System.out.println(StyleConstants.getFontFamily(at));
             fontComboBox.setSelectedItem(StyleConstants.getFontFamily(at));
             fontSizeComboBox.setSelectedItem(StyleConstants.getFontSize(at));
+            chooseColorButton.setBackground(StyleConstants.getForeground(at));
+            switch(StyleConstants.getAlignment(at)){
+                case StyleConstants.ALIGN_LEFT:
+                    leftAlignmentButton.setSelected(true);
+                    rightAlignmentButton.setSelected(false);
+                    centerAlignmentButton.setSelected(false);
+                    justifiedAlignmentButton.setSelected(false);
+                    break;
+                case StyleConstants.ALIGN_RIGHT:
+                    leftAlignmentButton.setSelected(false);
+                    rightAlignmentButton.setSelected(true);
+                    centerAlignmentButton.setSelected(false);
+                    justifiedAlignmentButton.setSelected(false);
+                    break;
+                case StyleConstants.ALIGN_CENTER:
+                    leftAlignmentButton.setSelected(false);
+                    rightAlignmentButton.setSelected(false);
+                    centerAlignmentButton.setSelected(true);
+                    justifiedAlignmentButton.setSelected(false);
+                    break;
+                case StyleConstants.ALIGN_JUSTIFIED:
+                    leftAlignmentButton.setSelected(false);
+                    rightAlignmentButton.setSelected(false);
+                    centerAlignmentButton.setSelected(false);
+                    justifiedAlignmentButton.setSelected(true);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

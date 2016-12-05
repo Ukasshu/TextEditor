@@ -8,6 +8,7 @@
     <properties>
       <maximumSize width="-1" height="-1"/>
       <minimumSize width="800" height="600"/>
+      <preferredSize width="800" height="600"/>
     </properties>
     <border type="none"/>
     <children>
@@ -120,7 +121,9 @@
             <minimum-size width="600" height="400"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <autoscrolls value="true"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="848d0" class="javax.swing.JEditorPane" binding="editorPane">
@@ -183,6 +186,51 @@
             <properties>
               <maximumSize width="75" height="26"/>
               <minimumSize width="75" height="26"/>
+            </properties>
+          </component>
+          <component id="93bc4" class="javax.swing.JButton" binding="chooseColorButton">
+            <constraints/>
+            <properties>
+              <background color="-16777216"/>
+              <maximumSize width="52" height="26"/>
+              <minimumSize width="52" height="26"/>
+              <text value=""/>
+            </properties>
+          </component>
+          <component id="732f9" class="javax.swing.JToolBar$Separator">
+            <constraints/>
+            <properties/>
+          </component>
+          <component id="a3e71" class="javax.swing.JButton" binding="leftAlignmentButton">
+            <constraints/>
+            <properties>
+              <maximumSize width="47" height="26"/>
+              <minimumSize width="47" height="26"/>
+              <text value="Left"/>
+            </properties>
+          </component>
+          <component id="44814" class="javax.swing.JButton" binding="centerAlignmentButton">
+            <constraints/>
+            <properties>
+              <maximumSize width="47" height="26"/>
+              <minimumSize width="47" height="26"/>
+              <text value="Center"/>
+            </properties>
+          </component>
+          <component id="eea76" class="javax.swing.JButton" binding="rightAlignmentButton">
+            <constraints/>
+            <properties>
+              <maximumSize width="47" height="26"/>
+              <minimumSize width="47" height="26"/>
+              <text value="Right"/>
+            </properties>
+          </component>
+          <component id="f6fe6" class="javax.swing.JButton" binding="justifiedAlignmentButton">
+            <constraints/>
+            <properties>
+              <maximumSize width="47" height="26"/>
+              <minimumSize width="47" height="26"/>
+              <text value="Justified"/>
             </properties>
           </component>
         </children>
